@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Bene's Beef | Owner Login</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #D7261E; color: #1A1414; padding: 20px; box-sizing: border-box; }
+    .card { background: #FFF6E5; border: 3px solid #1A1414; box-shadow: 8px 8px 0 #1A1414; border-radius: 14px; padding: 32px; width: 100%; max-width: 380px; text-align: center; }
+    img { width: 180px; margin: 0 auto 10px; display: block; }
+    h1 { font-family: 'Arial Black', Impact, sans-serif; font-size: 1.4rem; margin: 0 0 18px; }
+    input { width: 100%; box-sizing: border-box; font: inherit; padding: 13px 14px; border: 2px solid #1A1414; border-radius: 10px; margin-bottom: 12px; }
+    button { width: 100%; font: 800 1rem system-ui, sans-serif; text-transform: uppercase; letter-spacing: .5px; padding: 13px; border-radius: 999px; border: 3px solid #1A1414; background: #F6B523; cursor: pointer; box-shadow: 3px 3px 0 #1A1414; }
+    .err { color: #A8160F; font-weight: 800; min-height: 1.2em; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <form class="card" id="f">
+    <img src="/images/logo.svg" alt="Bene's Beef">
+    <h1>Owner Dashboard</h1>
+    <label for="pw" style="position:absolute;left:-9999px">Password</label>
+    <input id="pw" type="password" name="password" placeholder="Password" autocomplete="current-password" required autofocus>
+    <button type="submit">Sign In</button>
+    <div class="err" id="err"></div>
+  </form>
+  <script>
+    fetch('/admin/login-status').then(r => r.json()).then(s => {
+      if (!s.enabled) document.getElementById('err').textContent = 'Login disabled: set ADMIN_PASSWORD on the server.';
+    });
+    document.getElementById('f').addEventListener('submit', async e => {
+      e.preventDefault();
+      const r = await fetch('/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: document.getElementById('pw').value }) });
+      const j = await r.json().catch(() => ({}));
+      if (j.ok) location.href = '/admin';
+      else document.getElementById('err').textContent = j.error || 'Login failed.';
+    });
+  </script>
+</body>
+</html>

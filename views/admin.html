@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Bene's Beef | Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+  <style>
+    :root { --red: #D7261E; --ink: #1A1414; --cream: #FFF6E5; --mustard: #F6B523; --muted: #6B5B53; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--cream); color: var(--ink); }
+    header { background: var(--red); border-bottom: 4px solid var(--ink); color: var(--cream); }
+    header .in { max-width: 1100px; margin: 0 auto; padding: 12px 18px; display: flex; align-items: center; gap: 14px; }
+    header img { height: 48px; }
+    header h1 { font-family: 'Arial Black', Impact, sans-serif; font-size: 1.2rem; margin: 0; flex: 1; }
+    main { max-width: 1100px; margin: 0 auto; padding: 22px 18px 60px; }
+    button { font: 800 .85rem system-ui, sans-serif; cursor: pointer; border-radius: 999px; border: 2px solid var(--ink); padding: 8px 14px; background: #fff; }
+    .panel { background: #fff; border: 3px solid var(--ink); border-radius: 14px; box-shadow: 5px 5px 0 var(--ink); padding: 18px; margin-bottom: 24px; }
+    .panel h2 { margin: 0 0 12px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: .5px; }
+    .switch-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .big-toggle { font-size: 1rem; padding: 14px 22px; }
+    .big-toggle.on { background: var(--red); color: #fff; }
+    .announce-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .announce-row input { flex: 1; min-width: 220px; font: inherit; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 10px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .tabs button.active { background: var(--ink); color: var(--cream); }
+    .tabs .count { background: var(--mustard); color: var(--ink); border-radius: 999px; padding: 1px 8px; margin-left: 6px; }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filters button { padding: 5px 12px; font-size: .78rem; }
+    .filters button.active { background: var(--mustard); }
+    .cards { display: grid; gap: 14px; }
+    .card { background: #fff; border: 2px solid var(--ink); border-radius: 12px; padding: 16px; display: grid; gap: 8px; }
+    .card .top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; }
+    .card h3 { margin: 0; font-size: 1.1rem; }
+    .meta { color: var(--muted); font-size: .85rem; }
+    .kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; font-size: .92rem; }
+    .kv b { color: var(--muted); font-weight: 700; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    select { font: inherit; padding: 6px 10px; border-radius: 8px; border: 2px solid var(--ink); }
+    .del { background: #fff; color: var(--red); border-color: var(--red); margin-left: auto; }
+    .badge { font-size: .72rem; font-weight: 800; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 2px solid var(--ink); }
+    .badge.new { background: var(--mustard); } .badge.contacted { background: #cfe3ff; } .badge.booked { background: #c8f2d4; } .badge.done { background: #e6e0db; }
+    .empty { text-align: center; color: var(--muted); padding: 30px; }
+    a { color: var(--red); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header><div class="in">
+    <img src="/images/logo.svg" alt="Bene's Beef">
+    <h1>Owner Dashboard</h1>
+    <a href="/" target="_blank" style="color:#fff">View site</a>
+    <button id="logout">Sign out</button>
+  </div></header>
+
+  <main>
+    <div class="panel">
+      <h2>Today's Status</h2>
+      <div class="switch-row">
+        <button class="big-toggle" id="soldBtn">Mark SOLD OUT for today</button>
+        <span class="meta" id="soldMeta">Flips the banner on the site to "Sold out today." Resets automatically tomorrow.</span>
+      </div>
+      <div class="announce-row">
+        <input id="announce" maxlength="200" placeholder="Announcement banner (e.g. Closed Saturday for a private event). Leave blank to hide.">
+        <button id="saveAnnounce">Save banner</button>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button data-kind="inquiries" class="active">Big Orders &amp; Inquiries<span class="count" id="cnt-inquiries">0</span></button>
+      <button data-kind="challengers">Nephilim Challengers<span class="count" id="cnt-challengers">0</span></button>
+    </div>
+    <div class="filters" id="filters">
+      <button data-f="all" class="active">All</button>
+      <button data-f="new">New</button>
+      <button data-f="contacted">Contacted</button>
+      <button data-f="booked">Booked</button>
+      <button data-f="done">Done</button>
+    </div>
+    <div class="cards" id="cards"></div>
+  </main>
+
+  <script>
+    const STATUSES = ['new', 'contacted', 'booked', 'done'];
+    let kind = 'inquiries', filter = 'all', data = { inquiries: [], challengers: [] };
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const when = s => new Date(s.replace(' ', 'T') + 'Z').toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' });
+
+    async function api(url, opts) {
+      const r = await fetch(url, opts);
+      if (r.status === 401) { location.href = '/admin/login'; throw new Error('auth'); }
+      return r.json();
+    }
+
+    async function load() {
+      for (const k of ['inquiries', 'challengers']) {
+        const j = await api('/admin/api/' + k);
+        data[k] = j.rows || [];
+        document.getElementById('cnt-' + k).textContent = data[k].filter(r => r.status === 'new').length;
+      }
+      render();
+    }
+
+    function fields(r) {
+      if (kind === 'inquiries') return [['Type', r.type], ['Email', r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>` : ''], ['Date', r.event_date], ['People', r.headcount], ['Details', r.message]];
+      return [['Hometown', r.hometown], ['Best day', r.preferred_day], ['Trash talk', r.hype]];
+    }
+
+    function render() {
+      const rows = data[kind].filter(r => filter === 'all' || r.status === filter);
+      const el = document.getElementById('cards');
+      if (!rows.length) { el.innerHTML = '<div class="empty">Nothing here yet.</div>'; return; }
+      el.innerHTML = rows.map(r => `
+        <div class="card">
+          <div class="top">
+            <h3>${esc(r.name)} <span class="badge ${esc(r.status)}">${esc(r.status)}</span></h3>
+            <span class="meta">${when(r.created_at)}</span>
+          </div>
+          <div class="kv">
+            <b>Phone</b><span><a href="tel:${esc(r.phone)}">${esc(r.phone)}</a> · <a href="sms:${esc(r.phone)}">Text</a></span>
+            ${fields(r).filter(f => f[1]).map(f => `<b>${f[0]}</b><span>${f[0] === 'Email' ? f[1] : esc(f[1])}</span>`).join('')}
+          </div>
+          <div class="actions">
+            <label class="meta">Status
+              <select data-id="${r.id}" class="st">${STATUSES.map(s => `<option ${s === r.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
+            </label>
+            <button class="del" data-id="${r.id}">Delete</button>
+          </div>
+        </div>`).join('');
+    }
+
+    document.getElementById('cards').addEventListener('change', async e => {
+      if (!e.target.classList.contains('st')) return;
+      await api(`/admin/api/${kind}/${e.target.dataset.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: e.target.value }) });
+      load();
+    });
+    document.getElementById('cards').addEventListener('click', async e => {
+      if (!e.target.classList.contains('del')) return;
+      if (!confirm('Delete this submission for good? This cannot be undone.')) return;
+      await api(`/admin/api/${kind}/${e.target.dataset.id}`, { method: 'DELETE' });
+      load();
+    });
+    document.getElementById('tabs').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      kind = b.dataset.kind;
+      document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('active', x === b));
+      render();
+    });
+    document.getElementById('filters').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      filter = b.dataset.f;
+      document.querySelectorAll('#filters button').forEach(x => x.classList.toggle('active', x === b));
+      render();
+    });
+
+    // Sold-out + banner
+    let soldOut = false;
+    const soldBtn = document.getElementById('soldBtn');
+    function paintSold() {
+      soldBtn.classList.toggle('on', soldOut);
+      soldBtn.textContent = soldOut ? 'SOLD OUT today (tap to undo)' : 'Mark SOLD OUT for today';
+    }
+    async function loadSettings() {
+      const s = await api('/admin/api/settings/current');
+      soldOut = s.soldOut; paintSold();
+      document.getElementById('announce').value = s.announcement || '';
+    }
+    async function saveSettings(body) {
+      await api('/admin/api/settings/current', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      loadSettings();
+    }
+    soldBtn.addEventListener('click', () => saveSettings({ soldOut: !soldOut }));
+    document.getElementById('saveAnnounce').addEventListener('click', () => saveSettings({ announcement: document.getElementById('announce').value }));
+
+    document.getElementById('logout').addEventListener('click', async () => {
+      await fetch('/admin/logout', { method: 'POST' }); location.href = '/admin/login';
+    });
+
+    load(); loadSettings();
+  </script>
+</body>
+</html>

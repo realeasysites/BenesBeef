@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Bene's Beef &amp; Cutlets">
+  <!-- Interim wordmark. Swap for the client's real logo file (keep the filename or update references). -->
+  <defs>
+    <style>
+      .w{font-family:'Arial Black','Bowlby One',Impact,sans-serif;font-weight:900;font-size:96px}
+      .s{font-family:'Arial Black','Bowlby One',Impact,sans-serif;font-weight:900;font-size:34px}
+    </style>
+  </defs>
+  <circle cx="200" cy="200" r="194" fill="#1C2C5B" stroke="#1A1414" stroke-width="6"/>
+  <circle cx="200" cy="200" r="178" fill="none" stroke="#FFF6E5" stroke-width="4" stroke-dasharray="2 11" stroke-linecap="round"/>
+  <g fill="#FFF6E5">
+    <polygon points="200,34 205,48 220,48 208,57 212,71 200,62 188,71 192,57 180,48 195,48"/>
+    <polygon points="150,46 154,56 165,56 156,63 159,74 150,67 141,74 144,63 135,56 146,56"/>
+    <polygon points="250,46 254,56 265,56 256,63 259,74 250,67 241,74 244,63 235,56 246,56"/>
+  </g>
+  <g transform="rotate(-7 200 200)">
+    <text x="200" y="180" text-anchor="middle" class="w" textLength="310" lengthAdjust="spacingAndGlyphs" fill="#F6B523" stroke="#F6B523" stroke-width="24" stroke-linejoin="round">BENE'S</text>
+    <text x="200" y="180" text-anchor="middle" class="w" textLength="310" lengthAdjust="spacingAndGlyphs" fill="#D7261E" stroke="#1A1414" stroke-width="5" stroke-linejoin="round">BENE'S</text>
+    <text x="200" y="272" text-anchor="middle" class="w" textLength="262" lengthAdjust="spacingAndGlyphs" fill="#F6B523" stroke="#F6B523" stroke-width="24" stroke-linejoin="round">BEEF</text>
+    <text x="200" y="272" text-anchor="middle" class="w" textLength="262" lengthAdjust="spacingAndGlyphs" fill="#D7261E" stroke="#1A1414" stroke-width="5" stroke-linejoin="round">BEEF</text>
+    <rect x="96" y="290" width="208" height="50" rx="25" fill="#FFF6E5" stroke="#1A1414" stroke-width="4"/>
+    <text x="200" y="327" text-anchor="middle" class="s" textLength="172" lengthAdjust="spacingAndGlyphs" fill="#D7261E">&amp; CUTLETS</text>
+  </g>
+</svg>
