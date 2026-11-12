@@ -444,3 +444,42 @@ section { padding: 88px 0; }
   .status-strip { font-size: .75rem; }
   .social-card b { font-size: 1.02rem; }
 }
+
+/* ---------- Rules: ticket-stub cards (v2) ---------- */
+.rules { gap: 22px; }
+.rule {
+  position: relative; text-align: center;
+  padding: 34px 20px 24px;
+  border-radius: 6px;
+  box-shadow: 6px 6px 0 var(--red);
+  border: 3px solid var(--cream);
+  background:
+    radial-gradient(circle at 0 50%, var(--ink) 11px, transparent 12px) left / 50% 100% no-repeat,
+    radial-gradient(circle at 100% 50%, var(--ink) 11px, transparent 12px) right / 50% 100% no-repeat,
+    var(--cream);
+  transition: transform .15s ease;
+}
+.rule:nth-child(odd) { transform: rotate(-1.5deg); }
+.rule:nth-child(even) { transform: rotate(1.5deg); }
+.rule:hover { transform: rotate(0) translateY(-4px); }
+.rule::before {
+  content: ""; position: absolute; left: 14px; right: 14px; top: 50%;
+  border-top: 2px dashed rgba(26, 20, 20, .18); pointer-events: none;
+}
+.rule-ico {
+  position: relative; z-index: 1;
+  width: 64px; height: 64px; margin: 0 auto 14px;
+  border-radius: 50%; display: grid; place-items: center;
+  background: var(--mustard); color: var(--ink);
+  border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
+}
+.rule-ico svg { width: 30px; height: 30px; }
+.rule h3 { position: relative; z-index: 1; font-size: 1.65rem; color: var(--red); margin: 0 0 12px; }
+.rule p { position: relative; z-index: 1; font-family: var(--hand); font-size: 1.05rem; line-height: 1.45; margin: 0 0 18px; background: var(--cream); padding: 4px 0; }
+.rule-chip {
+  position: relative; z-index: 1; display: inline-block;
+  background: var(--ink); color: var(--cream); text-decoration: none;
+  font-family: var(--display); font-size: .95rem; letter-spacing: .5px; text-transform: uppercase;
+  padding: 7px 16px; border-radius: 999px;
+}
+a.rule-chip:hover { background: var(--red); }
